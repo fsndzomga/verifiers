@@ -116,4 +116,64 @@ theorem bounded_hermitian_sign_relaxation
   exact le_trans (sub_le_sub_right hmul _)
     (signed_spectral_rank_penalty hQ hr hα hβ hc)
 
+/-- The negative spectral part has rank equal to the negative index. -/
+theorem rank_hermNegPart_eq_negIndex {Q : Matrix n n ℂ} (hQ : Q.IsHermitian) :
+    (hermNegPart hQ).rank = negIndex hQ := by
+  unfold hermNegPart negIndex
+  rw [rank_specMap]
+  congr 1
+  ext i
+  simp only [mem_filter, mem_univ, true_and, ne_eq, negPart_eq_zero, not_le]
+
+/-- **Two-sided inertia penalty.** If at most `b₊` eigenvalues of `Q` are
+positive and at most `b₋` are negative, the two signs are charged separately.
+This improves the crude rank penalty whenever the symbol is asymmetric. -/
+theorem signed_spectral_two_index_penalty
+    {Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {b₊ b₋ : ℕ}
+    (hpos : posIndex hQ ≤ b₊) (hneg : negIndex hQ ≤ b₋)
+    {α β c : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hc : 0 ≤ c) :
+    2 * c * (β * (∑ i, (hQ.eigenvalues i)⁺) + α * (∑ i, (hQ.eigenvalues i)⁻))
+      - c ^ 2 * (β ^ 2 * b₊ + α ^ 2 * b₋) ≤ frobSq Q := by
+  have hpCard : #{i | (hQ.eigenvalues i)⁺ ≠ 0} ≤ b₊ := by
+    rw [← rank_specMap hQ (·⁺), show specMap hQ (·⁺) = hermPosPart hQ by rfl,
+      rank_hermPosPart hQ]
+    exact hpos
+  have hnCard : #{i | (hQ.eigenvalues i)⁻ ≠ 0} ≤ b₋ := by
+    rw [← rank_specMap hQ (·⁻), show specMap hQ (·⁻) = hermNegPart hQ by rfl,
+      rank_hermNegPart_eq_negIndex hQ]
+    exact hneg
+  have hp := sum_sq_lower_of_card_pos_le
+    (q := fun i => (hQ.eigenvalues i)⁺) hpCard (c * β)
+  have hn := sum_sq_lower_of_card_pos_le
+    (q := fun i => (hQ.eigenvalues i)⁻) hnCard (c * α)
+  have hsplit : ∑ i, (hQ.eigenvalues i) ^ 2 =
+      (∑ i, ((hQ.eigenvalues i)⁺) ^ 2) + (∑ i, ((hQ.eigenvalues i)⁻) ^ 2) := by
+    rw [← Finset.sum_add_distrib]
+    apply Finset.sum_congr rfl
+    intro i hi
+    rcases le_total (0 : ℝ) (hQ.eigenvalues i) with h | h
+    · rw [posPart_eq_self.mpr h, negPart_eq_zero.mpr h]
+      ring
+    · rw [posPart_eq_zero.mpr h, negPart_eq_neg.mpr h]
+      ring
+  rw [frobSq_hermitian_eq_sum_sq_eigenvalues hQ, hsplit]
+  nlinarith
+
+/-- Signed matrix tail bound with separate positive and negative indices. -/
+theorem bounded_hermitian_two_index_relaxation
+    {B Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {b₊ b₋ : ℕ}
+    (hpos : posIndex hQ ≤ b₊) (hneg : negIndex hQ ≤ b₋)
+    {α β c : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hc : 0 ≤ c)
+    (hUpper : (((β : ℂ) • (1 : Matrix n n ℂ)) - B).PosSemidef)
+    (hLower : (B + ((α : ℂ) • (1 : Matrix n n ℂ))).PosSemidef) :
+    2 * c * RCLike.re (B * Q).trace
+      - c ^ 2 * (β ^ 2 * b₊ + α ^ 2 * b₋) ≤ frobSq Q := by
+  have htrace := bounded_hermitian_trace_le_parts hQ hUpper hLower
+  rw [rtrace_hermPosPart hQ, rtrace_hermNegPart hQ] at htrace
+  have hmul : 2 * c * RCLike.re (B * Q).trace
+      ≤ 2 * c * (β * (∑ i, (hQ.eigenvalues i)⁺) + α * (∑ i, (hQ.eigenvalues i)⁻)) := by
+    exact mul_le_mul_of_nonneg_left htrace (mul_nonneg (by norm_num) hc)
+  exact le_trans (sub_le_sub_right hmul _)
+    (signed_spectral_two_index_penalty hQ hpos hneg hα hβ hc)
+
 end ZetaResearch
