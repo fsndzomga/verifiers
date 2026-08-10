@@ -100,6 +100,25 @@ theorem offline_two_index_test_bridge
     (negIndex_blockQ_le D Pr ha)
     hα hβ hc hUpper hLower
 
+/-- **Inertia-free PSD-tail counting core.**  If the off-line part `Q` is
+replaced by `Q-N` with `N ⪰ 0`, the positive-index budget does not increase.
+Consequently Anthropic's rank-counting inequality applies to the corrected
+matrix `Ahat-N` with exactly the same counting term `b`. -/
+theorem zeroside_rank_core_psd_tail
+    {Ahat P Q N : Matrix n n ℂ}
+    (hPQ : Ahat = P + Q) (hP : P.PosSemidef) (hQ : Q.IsHermitian)
+    (hN : N.PosSemidef)
+    {r b : ℕ} (hrank : P.rank ≤ r) (hpos : posIndex hQ ≤ b)
+    {Non NI : ℝ} (htrP : rtrace P ≤ Non) (hNcount : Non + 2 * b ≤ NI) :
+    4 * rtrace (Ahat - N) - 2 * NI - frobSq (Ahat - N) ≤ r := by
+  have hdecomp : Ahat - N = P + (Q - N) := by
+    rw [hPQ]
+    abel
+  have hpos' : posIndex (hQ.sub hN.isHermitian) ≤ b :=
+    (posIndex_sub_posSemidef_le hQ hN).trans hpos
+  exact Zeta23.Assembly.zeroside_rank_core
+    hdecomp hP (hQ.sub hN.isHermitian) hrank hpos' htrP hNcount
+
 /-- Exact arithmetic target corresponding to the CGdL constant 1.3208.
 If a normalized zero-side matrix has trace at least `N` and Frobenius square at
 most `1.3208 N`, Anthropic's rank-counting core gives `0.6792 N`. -/
@@ -113,6 +132,24 @@ theorem cgdL_13208_rank_target
     (hfrob : frobSq Ahat ≤ (1651 / 1250 : ℝ) * NI) :
     (849 / 1250 : ℝ) * NI ≤ r := by
   have hcore := Zeta23.Assembly.zeroside_rank_core hPQ hP hQ hrank hpos htrP hNcount
+  norm_num at hcore ⊢
+  linarith
+
+/-- The same 67.92% arithmetic target after an arbitrary PSD correction.  This
+is the formal endpoint needed by a matrix version of the CGdL negative-tail
+discard: it remains only to construct `N` analytically and prove these two
+trace bounds. -/
+theorem cgdL_13208_psd_tail_target
+    {Ahat P Q N : Matrix n n ℂ}
+    (hPQ : Ahat = P + Q) (hP : P.PosSemidef) (hQ : Q.IsHermitian)
+    (hN : N.PosSemidef)
+    {r b : ℕ} (hrank : P.rank ≤ r) (hpos : posIndex hQ ≤ b)
+    {Non NI : ℝ} (htrP : rtrace P ≤ Non) (hNcount : Non + 2 * b ≤ NI)
+    (htr : NI ≤ rtrace (Ahat - N))
+    (hfrob : frobSq (Ahat - N) ≤ (1651 / 1250 : ℝ) * NI) :
+    (849 / 1250 : ℝ) * NI ≤ r := by
+  have hcore := zeroside_rank_core_psd_tail
+    hPQ hP hQ hN hrank hpos htrP hNcount
   norm_num at hcore ⊢
   linarith
 
