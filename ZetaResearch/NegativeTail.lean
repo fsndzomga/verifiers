@@ -40,6 +40,13 @@ theorem posIndex_sub_frameTail_le
     posIndex (hQ.sub (frameTail_posSemidef w v hw).isHermitian) ≤ posIndex hQ :=
   posIndex_sub_posSemidef_le hQ (frameTail_posSemidef w v hw)
 
+/-- `negIndex` depends only on the matrix, not on the particular proof of
+Hermitian symmetry. -/
+lemma negIndex_congr {A B : Matrix n n ℂ} (hA : A.IsHermitian) (hB : B.IsHermitian)
+    (h : A = B) : negIndex hA = negIndex hB := by
+  subst h
+  rfl
+
 open Zeta23.ZeroSide
 
 /-- Anthropic's off-line block has at most one negative direction per reflected
@@ -52,23 +59,29 @@ theorem negIndex_blockQ_le
   have hRe := D.rePart_posSemidef Pr
   have hIm := D.imPart_posSemidef Pr
   have hinv : 0 ≤ a⁻¹ := inv_nonneg.mpr ha.le
-  let ReS : Matrix d d ℂ := (((a⁻¹ : ℝ) : ℂ) • D.rePart Pr)
-  let ImS : Matrix d d ℂ := (((a⁻¹ : ℝ) : ℂ) • D.imPart Pr)
+  let ReS : Matrix d d ℂ := a⁻¹ • D.rePart Pr
+  let ImS : Matrix d d ℂ := a⁻¹ • D.imPart Pr
   have hReS : ReS.PosSemidef := by
     dsimp [ReS]
-    exact hRe.smul (Complex.zero_le_real.mpr hinv)
+    exact hRe.smul hinv
   have hImS : ImS.PosSemidef := by
     dsimp [ImS]
-    exact hIm.smul (Complex.zero_le_real.mpr hinv)
+    exact hIm.smul hinv
   have hEq : D.blockQ a = ReS - ImS := by
+    rw [D.blockQ_eq Pr a]
     dsimp [ReS, ImS]
-    rw [D.blockQ_eq Pr a, smul_sub]
+    ext i j
+    simp [Matrix.smul_apply, smul_eq_mul]
   have hbase := negIndex_sub_le_rank_right hReS hImS
   have hrank : ImS.rank ≤ Pr.p := by
-    dsimp [ImS]
-    rw [rank_smul_of_ne_zero _ (by exact_mod_cast (inv_ne_zero ha.ne'))]
+    have hscale : ImS = (((a⁻¹ : ℝ) : ℂ) • D.imPart Pr) := by
+      dsimp [ImS]
+      ext i j
+      simp [Matrix.smul_apply, smul_eq_mul]
+    rw [hscale, rank_smul_of_ne_zero _ (by exact_mod_cast (inv_ne_zero ha.ne'))]
     exact rank_imPart_le D Pr
-  rw [hEq]
+  rw [negIndex_congr (D.blockQ_isHermitian a)
+    (hReS.isHermitian.sub hImS.isHermitian) hEq]
   exact hbase.trans hrank
 
 /-- The fully two-sided off-line signed-test bridge: each reflected pair costs
@@ -97,7 +110,7 @@ theorem cgdL_13208_rank_target
     (hPQ : Ahat = P + Q) (hP : P.PosSemidef) (hQ : Q.IsHermitian)
     {r b : ℕ} (hrank : P.rank ≤ r) (hpos : posIndex hQ ≤ b)
     {Non NI : ℝ} (htrP : rtrace P ≤ Non) (hNcount : Non + 2 * b ≤ NI)
-    (hNI : 0 ≤ NI)
+    (_hNI : 0 ≤ NI)
     (htrA : NI ≤ rtrace Ahat)
     (hfrob : frobSq Ahat ≤ (1651 / 1250 : ℝ) * NI) :
     (849 / 1250 : ℝ) * NI ≤ r := by
