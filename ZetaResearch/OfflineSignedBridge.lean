@@ -60,9 +60,10 @@ theorem offline_bounded_test_bridge
     2 * c * RCLike.re (B * D.blockQ a).trace
       - c ^ 2 * max (α ^ 2) (β ^ 2) * (2 * Pr.p)
       ≤ frobSq (D.blockQ a) := by
-  exact bounded_hermitian_sign_relaxation
+  have h := bounded_hermitian_sign_relaxation
     (D.blockQ_isHermitian a) (rank_blockQ_le_two_p D Pr ha)
     hα hβ hc hUpper hLower
+  simpa [Nat.cast_mul] using h
 
 /-- If the test matrix is itself built as a bounded multiplier on a normalized
 finite frame, the previous theorem applies automatically. -/
