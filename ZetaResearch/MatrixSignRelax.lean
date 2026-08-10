@@ -1,4 +1,5 @@
 import Zeta23.LinAlg.RankTrace
+import Zeta23.ZeroSide
 
 open Matrix Finset RHLinalg
 open scoped BigOperators ComplexOrder
@@ -16,7 +17,7 @@ theorem frobSq_posPart_le {Q : Matrix n n 𝕜} (hQ : Q.IsHermitian) :
   rw [frobSq_hermPosPart hQ, frobSq_hermitian_eq_sum_sq_eigenvalues hQ]
   apply Finset.sum_le_sum
   intro i hi
-  rcases le_total 0 (hQ.eigenvalues i) with hx | hx
+  rcases le_total (0 : ℝ) (hQ.eigenvalues i) with hx | hx
   · rw [posPart_eq_self.mpr hx]
   · rw [posPart_eq_zero.mpr hx]
     exact sq_nonneg _
