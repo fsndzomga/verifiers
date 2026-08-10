@@ -7,6 +7,7 @@ on:
     paths:
       - 'lean-toolchain'
       - 'lakefile.toml'
+      - 'ZetaResearch.lean'
       - 'ZetaResearch/**'
       - '.github/workflows/zeta-lean-check.yml'
 
