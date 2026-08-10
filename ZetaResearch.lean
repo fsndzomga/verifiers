@@ -5,3 +5,4 @@ import ZetaResearch.SignedMatrixRelax
 import ZetaResearch.FrameMultiplier
 import ZetaResearch.OfflineSignedBridge
 import ZetaResearch.TwoSidedInertia
+import ZetaResearch.NegativeTail
