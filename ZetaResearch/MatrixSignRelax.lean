@@ -20,7 +20,7 @@ theorem frobSq_posPart_le {Q : Matrix n n 𝕜} (hQ : Q.IsHermitian) :
   rcases le_total (0 : ℝ) (hQ.eigenvalues i) with hx | hx
   · rw [posPart_eq_self.mpr hx]
   · rw [posPart_eq_zero.mpr hx]
-    exact sq_nonneg _
+    simpa using sq_nonneg (hQ.eigenvalues i)
 
 /-- **Matrix sign-relaxation / inertia penalty.**
 
@@ -66,7 +66,11 @@ theorem positive_contraction_trace_le_posPart
     have h := trace_mul_nonneg_of_posSemidef hIB (hermPosPart_posSemidef hQ)
     dsimp [Qp] at h ⊢
     simpa [sub_mul, rtrace, trace_sub, map_sub] using h
-  rw [hQdec, mul_sub, trace_sub, map_sub]
+  have hBQ : RCLike.re (B * Q).trace =
+      RCLike.re (B * Qp).trace - RCLike.re (B * Qm).trace := by
+    rw [hQdec, mul_sub, trace_sub, map_sub]
+  change RCLike.re (B * Q).trace ≤ rtrace Qp
+  rw [hBQ]
   linarith
 
 /-- **Test-matrix sign relaxation.** If `0 ⪯ B ⪯ I` and the Hermitian tail
