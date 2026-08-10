@@ -21,7 +21,7 @@ def frameMultiplier (w a : s → ℝ) (v : s → n → ℂ) : Matrix n n ℂ :=
 lemma frameOperator_posSemidef (w : s → ℝ) (v : s → n → ℂ)
     (hw : ∀ t, 0 ≤ w t) : (frameOperator w v).PosSemidef := by
   unfold frameOperator
-  refine Zeta23.ZeroSide.posSemidef_sum _ fun t _ => ?_
+  refine posSemidef_sum _ fun t _ => ?_
   have h := posSemidef_vecMulVec_self_star (v t)
   exact h.smul (Complex.zero_le_real.mpr (hw t))
 
@@ -29,7 +29,7 @@ lemma frameMultiplier_posSemidef (w a : s → ℝ) (v : s → n → ℂ)
     (hw : ∀ t, 0 ≤ w t) (ha : ∀ t, 0 ≤ a t) :
     (frameMultiplier w a v).PosSemidef := by
   unfold frameMultiplier
-  refine Zeta23.ZeroSide.posSemidef_sum _ fun t _ => ?_
+  refine posSemidef_sum _ fun t _ => ?_
   have h := posSemidef_vecMulVec_self_star (v t)
   exact h.smul (Complex.zero_le_real.mpr (mul_nonneg (hw t) (ha t)))
 
