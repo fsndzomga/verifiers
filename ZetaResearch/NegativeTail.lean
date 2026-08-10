@@ -71,14 +71,12 @@ theorem negIndex_blockQ_le
     rw [D.blockQ_eq Pr a]
     dsimp [ReS, ImS]
     ext i j
-    simp [Matrix.smul_apply, smul_eq_mul]
+    simp [Matrix.smul_apply]
+    ring
   have hbase := negIndex_sub_le_rank_right hReS hImS
   have hrank : ImS.rank ≤ Pr.p := by
-    have hscale : ImS = (((a⁻¹ : ℝ) : ℂ) • D.imPart Pr) := by
-      dsimp [ImS]
-      ext i j
-      simp [Matrix.smul_apply, smul_eq_mul]
-    rw [hscale, rank_smul_of_ne_zero _ (by exact_mod_cast (inv_ne_zero ha.ne'))]
+    change ((((a⁻¹ : ℝ) : ℂ) • D.imPart Pr).rank ≤ Pr.p)
+    rw [rank_smul_of_ne_zero _ (by exact_mod_cast (inv_ne_zero ha.ne'))]
     exact rank_imPart_le D Pr
   rw [negIndex_congr (D.blockQ_isHermitian a)
     (hReS.isHermitian.sub hImS.isHermitian) hEq]
