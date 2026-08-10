@@ -17,9 +17,11 @@ theorem hermPosPart_eq_self_of_posSemidef {A : Matrix n n ℂ} (hA : A.PosSemide
   unfold hermPosPart specMap
   conv_rhs => rw [hA.isHermitian.spectral_theorem]
   congr 1
-  apply diagonal_congr
-  intro i
-  rw [posPart_eq_self.mpr (hA.eigenvalues_nonneg i)]
+  ext i j
+  by_cases hij : i = j
+  · subst j
+    simp [posPart_eq_self.mpr (hA.eigenvalues_nonneg i)]
+  · simp [hij]
 
 /-- A PSD matrix is positive definite on the range of its own matrix map. -/
 theorem posDefOn_range_self_of_posSemidef {A : Matrix n n ℂ} (hA : A.PosSemidef) :
@@ -50,7 +52,7 @@ theorem negIndex_sub_le_rank_right {P N : Matrix n n ℂ}
     intro x hx hne
     obtain ⟨y, rfl⟩ := hx
     have hpzero : Qp *ᵥ (Qm *ᵥ y) = 0 := by
-      rw [← Matrix.mulVec_mulVec]
+      rw [Matrix.mulVec_mulVec]
       dsimp [Qp, Qm]
       rw [hermPosPart_mul_hermNegPart hQ, zero_mulVec]
     have hpform : hermForm Qp (Qm *ᵥ y) = 0 := by
@@ -64,6 +66,7 @@ theorem negIndex_sub_le_rank_right {P N : Matrix n n ℂ}
     have hdec : P - N = Qp - Qm := by
       dsimp [Qp, Qm]
       exact (hermPosPart_sub_hermNegPart hQ).symm
+    simp only [mulVecLin_apply]
     rw [hdec, hermForm_sub, hpform]
     linarith
   have hWN : PosDefOn N W := by
