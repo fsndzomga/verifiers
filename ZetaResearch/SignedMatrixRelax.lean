@@ -35,7 +35,7 @@ theorem signed_spectral_rank_penalty
       rcases lt_or_gt_of_ne hz with hneg | hpos
       · have hp0 : (hQ.eigenvalues i)⁺ = 0 := posPart_eq_zero.mpr hneg.le
         have hm : (hQ.eigenvalues i)⁻ = -(hQ.eigenvalues i) := negPart_eq_neg.mpr hneg.le
-        rw [hp0, hm, β_mul_zero, zero_add]
+        rw [hp0, hm, mul_zero, zero_add]
         have hy := sq_ge_linear' (-(hQ.eigenvalues i)) (c * α)
         have hpen : c ^ 2 * α ^ 2 ≤ c ^ 2 * M :=
           mul_le_mul_of_nonneg_left hMα (sq_nonneg c)
@@ -50,6 +50,7 @@ theorem signed_spectral_rank_penalty
   have hsum := Finset.sum_le_sum hpt
   simp only [sum_sub_distrib, ← mul_sum, sum_ite_mem, univ_inter, sum_const,
     nsmul_eq_mul] at hsum
+  rw [Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.mul_sum] at hsum
   have hcard : #s ≤ r := by
     dsimp [s]
     calc
@@ -60,7 +61,6 @@ theorem signed_spectral_rank_penalty
     mul_le_mul_of_nonneg_right (Nat.cast_le.mpr hcard) (mul_nonneg (sq_nonneg c) hM0)
   rw [frobSq_hermitian_eq_sum_sq_eigenvalues hQ]
   dsimp [M] at hsum hcardR ⊢
-  rw [← Finset.mul_sum, ← Finset.mul_sum]
   nlinarith
 
 /-- A Hermitian test matrix with spectrum constrained to `[-α, β]` sees an
@@ -86,9 +86,11 @@ theorem bounded_hermitian_trace_le_parts
   have hp' : RCLike.re (B * Qp).trace ≤ β * rtrace Qp := by
     dsimp [Qp] at hp ⊢
     simpa [sub_mul, rtrace, trace_sub, trace_smul, map_sub, Complex.re_ofReal_mul] using hp
-  have hm' : - RCLike.re (B * Qm).trace ≤ α * rtrace Qm := by
+  have hm0 : 0 ≤ RCLike.re (B * Qm).trace + α * rtrace Qm := by
     dsimp [Qm] at hm ⊢
     simpa [add_mul, rtrace, trace_add, trace_smul, map_add, Complex.re_ofReal_mul] using hm
+  have hm' : - RCLike.re (B * Qm).trace ≤ α * rtrace Qm := by
+    linarith
   have hBQ : RCLike.re (B * Q).trace =
       RCLike.re (B * Qp).trace - RCLike.re (B * Qm).trace := by
     rw [hQdec, mul_sub, trace_sub, map_sub]
