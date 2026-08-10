@@ -63,4 +63,57 @@ theorem signed_spectral_rank_penalty
   rw [← Finset.mul_sum, ← Finset.mul_sum]
   nlinarith
 
+/-- A Hermitian test matrix with spectrum constrained to `[-α, β]` sees an
+indefinite Hermitian matrix `Q` by charging the positive spectral part of `Q`
+with weight `β` and its negative spectral part with weight `α`.
+
+The order assumptions are encoded without talking about the eigenvalues of `B`:
+`βI-B ⪰ 0` and `B+αI ⪰ 0`.
+-/
+theorem bounded_hermitian_trace_le_parts
+    {B Q : Matrix n n ℂ} (hQ : Q.IsHermitian)
+    {α β : ℝ} (hUpper : (((β : ℂ) • (1 : Matrix n n ℂ)) - B).PosSemidef)
+      (hLower : (B + ((α : ℂ) • (1 : Matrix n n ℂ))).PosSemidef) :
+    RCLike.re (B * Q).trace
+      ≤ β * rtrace (hermPosPart hQ) + α * rtrace (hermNegPart hQ) := by
+  let Qp := hermPosPart hQ
+  let Qm := hermNegPart hQ
+  have hQdec : Q = Qp - Qm := by
+    dsimp [Qp, Qm]
+    exact (hermPosPart_sub_hermNegPart hQ).symm
+  have hp := trace_mul_nonneg_of_posSemidef hUpper (hermPosPart_posSemidef hQ)
+  have hm := trace_mul_nonneg_of_posSemidef hLower (hermNegPart_posSemidef hQ)
+  have hp' : RCLike.re (B * Qp).trace ≤ β * rtrace Qp := by
+    dsimp [Qp] at hp ⊢
+    simpa [sub_mul, rtrace, trace_sub, trace_smul, map_sub, Complex.re_ofReal_mul] using hp
+  have hm' : - RCLike.re (B * Qm).trace ≤ α * rtrace Qm := by
+    dsimp [Qm] at hm ⊢
+    simpa [add_mul, rtrace, trace_add, trace_smul, map_add, Complex.re_ofReal_mul] using hm
+  have hBQ : RCLike.re (B * Q).trace =
+      RCLike.re (B * Qp).trace - RCLike.re (B * Qm).trace := by
+    rw [hQdec, mul_sub, trace_sub, map_sub]
+  rw [hBQ]
+  linarith
+
+/-- **Signed matrix tail bound.**
+
+If a Hermitian test matrix has spectrum in `[-α,β]`, and the Hermitian tail `Q`
+has rank at most `r`, then its signed trace contribution is controlled by the
+Frobenius mass of `Q` with an explicit rank penalty.
+-/
+theorem bounded_hermitian_sign_relaxation
+    {B Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {r : ℕ} (hr : Q.rank ≤ r)
+    {α β c : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hc : 0 ≤ c)
+    (hUpper : (((β : ℂ) • (1 : Matrix n n ℂ)) - B).PosSemidef)
+    (hLower : (B + ((α : ℂ) • (1 : Matrix n n ℂ))).PosSemidef) :
+    2 * c * RCLike.re (B * Q).trace
+      - c ^ 2 * max (α ^ 2) (β ^ 2) * r ≤ frobSq Q := by
+  have htrace := bounded_hermitian_trace_le_parts hQ hUpper hLower
+  rw [rtrace_hermPosPart hQ, rtrace_hermNegPart hQ] at htrace
+  have hmul : 2 * c * RCLike.re (B * Q).trace
+      ≤ 2 * c * (β * (∑ i, (hQ.eigenvalues i)⁺) + α * (∑ i, (hQ.eigenvalues i)⁻)) := by
+    exact mul_le_mul_of_nonneg_left htrace (mul_nonneg (by norm_num) hc)
+  exact le_trans (sub_le_sub_right hmul _)
+    (signed_spectral_rank_penalty hQ hr hα hβ hc)
+
 end ZetaResearch
