@@ -16,8 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Cache Lean workspace
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake/packages
+            .lake/build
+            lake-manifest.json
+          key: zeta-lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
       - name: Install elan
-        run: curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          fi
       - name: Build and kernel-check
         shell: bash
         run: |
