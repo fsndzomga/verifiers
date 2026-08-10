@@ -3,6 +3,8 @@ import Mathlib
 open scoped BigOperators
 open Finset
 
+noncomputable section
+
 namespace ZetaResearch
 
 def q (x : ℝ) : ℝ := 1 - (7 / 4 : ℝ) * x + (2 / 3 : ℝ) * x ^ 2
@@ -39,13 +41,18 @@ theorem sum_q_sq_of_moments
             apply Finset.sum_congr rfl
             intro i hi
             exact q_sq_expand (x i)
-    _ = (Fintype.card ι : ℝ)
+    _ = (Finset.univ.card : ℝ)
           - (7 / 2 : ℝ) * (∑ i, x i)
           + (211 / 48 : ℝ) * (∑ i, x i ^ 2)
           - (7 / 3 : ℝ) * (∑ i, x i ^ 3)
           + (4 / 9 : ℝ) * (∑ i, x i ^ 4) := by
             simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib,
               Finset.sum_const, nsmul_eq_mul, mul_one, ← Finset.mul_sum]
+    _ = (Fintype.card ι : ℝ)
+          - (7 / 2 : ℝ) * (∑ i, x i)
+          + (211 / 48 : ℝ) * (∑ i, x i ^ 2)
+          - (7 / 3 : ℝ) * (∑ i, x i ^ 3)
+          + (4 / 9 : ℝ) * (∑ i, x i ^ 4) := by simp
     _ = (5 / 36 : ℝ) * n := by
           rw [h0, h1, h2, h3, h4]
           ring
@@ -133,6 +140,24 @@ theorem bhb_scalar_offline_obstruction :
     let s2 : ℝ := 2 * a ^ 2 + 2 * b ^ 2
     s2 > 0 ∧ s1 ^ 2 / s2 / n = (121 / 170 : ℝ)
       ∧ (19 / 27 : ℝ) < (121 / 170 : ℝ) := by
+  norm_num
+
+/-- Pure counting conversion behind a possible transfer of the CGdL 1.3208 multiplicity constant. -/
+theorem multiplicity_13208_implies_simple_6792
+    {n nstar simple : ℝ}
+    (hmult : nstar ≤ (13208 / 10000 : ℝ) * n)
+    (hcount : 2 * n - nstar ≤ simple) :
+    (6792 / 10000 : ℝ) * n ≤ simple := by
+  linarith
+
+/-- The numerical CGdL target would strictly improve the Montgomery--Taylor 0.6725007 value. -/
+theorem target_6792_beats_6725007 :
+    (6725007 / 10000000 : ℝ) < (6792 / 10000 : ℝ) := by
+  norm_num
+
+/-- The 0.6792 target still lies below Anthropic's explicit bandwidth-one ceiling 0.6818287. -/
+theorem target_6792_below_6818287 :
+    (6792 / 10000 : ℝ) < (6818287 / 10000000 : ℝ) := by
   norm_num
 
 end ZetaResearch
