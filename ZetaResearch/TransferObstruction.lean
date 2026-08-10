@@ -22,6 +22,8 @@ theorem pair_hyperbolic_identity {d : Type*} [Fintype d] [DecidableEq d]
       (fun k => (x k : ℂ) - Complex.I * y k)) := by
   ext i j
   simp [Matrix.vecMulVec_apply]
+  ring_nf
+  rw [Complex.I_sq]
   ring
 
 /-- A sign-relaxed pair-correlation kernel cannot be represented by a single Frobenius/Gram square
