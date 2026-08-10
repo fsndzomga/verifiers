@@ -27,21 +27,21 @@ theorem sum_rank_trace_ineq
     (hb : ∀ j, posIndex (hQ j) ≤ b)
     (c : J → ℝ) (hc : ∀ j, 0 < c j) :
     ∑ j, (c j * rtrace (P j) + 2 * c j * rtrace (Q j)
-      - c j ^ 2 * b - frobSq (A j))
-      ≤ (∑ j, c j ^ 2 / 4) * r := by
+      - c j ^ 2 * (b : ℝ) - frobSq (A j))
+      ≤ (∑ j, c j ^ 2 / 4) * (r : ℝ) := by
   have hj : ∀ j,
       c j * rtrace (P j) + 2 * c j * rtrace (Q j)
-        - c j ^ 2 * b - frobSq (A j)
-        ≤ c j ^ 2 / 4 * r := by
+        - c j ^ 2 * (b : ℝ) - frobSq (A j)
+        ≤ c j ^ 2 / 4 * (r : ℝ) := by
     intro j
     have h := rank_trace_ineq (hP j) (hQ j) (hr j) (hb j) (hc j)
     rw [← hPQ j] at h
-    linarith
+    exact_mod_cast h
   calc
     ∑ j, (c j * rtrace (P j) + 2 * c j * rtrace (Q j)
-      - c j ^ 2 * b - frobSq (A j))
-      ≤ ∑ j, (c j ^ 2 / 4 * r) := sum_le_sum fun j _ => hj j
-    _ = (∑ j, c j ^ 2 / 4) * r := by rw [sum_mul]
+      - c j ^ 2 * (b : ℝ) - frobSq (A j))
+      ≤ ∑ j, (c j ^ 2 / 4 * (r : ℝ)) := sum_le_sum fun j _ => hj j
+    _ = (∑ j, c j ^ 2 / 4) * (r : ℝ) := by rw [sum_mul]
 
 /-- A scalar form of the counting constraint used to optimize each component.
 If `0 ≤ x`, `0 ≤ y`, and `x + 2y ≤ N`, then
@@ -86,34 +86,30 @@ theorem sum_rank_trace_counting
     (hb : ∀ j, posIndex (hQ j) ≤ b)
     {NI : ℝ}
     (htrP0 : ∀ j, 0 ≤ rtrace (P j))
-    (hcount : ∀ j, rtrace (P j) + 2 * b ≤ NI)
+    (hcount : ∀ j, rtrace (P j) + 2 * (b : ℝ) ≤ NI)
     (c : J → ℝ) (hc : ∀ j, 0 < c j) :
     ∑ j, (2 * c j * rtrace (A j) - frobSq (A j)
       - max (c j) (c j ^ 2 / 2) * NI)
-      ≤ (∑ j, c j ^ 2 / 4) * r := by
+      ≤ (∑ j, c j ^ 2 / 4) * (r : ℝ) := by
   have hbase := sum_rank_trace_ineq A P Q hPQ hP hQ hr hb c hc
   have hcost : ∀ j,
       c j * rtrace (P j) + c j ^ 2 * (b : ℝ)
         ≤ max (c j) (c j ^ 2 / 2) * NI := by
     intro j
-    apply weighted_count_cost (htrP0 j) (Nat.cast_nonneg b)
-    · simpa [Nat.cast_mul] using hcount j
-    · exact (hc j).le
+    exact weighted_count_cost (htrP0 j) (Nat.cast_nonneg b) (hcount j) (hc j).le
   have hterm : ∀ j,
       2 * c j * rtrace (A j) - frobSq (A j)
         - max (c j) (c j ^ 2 / 2) * NI
       ≤ c j * rtrace (P j) + 2 * c j * rtrace (Q j)
-        - c j ^ 2 * b - frobSq (A j) := by
+        - c j ^ 2 * (b : ℝ) - frobSq (A j) := by
     intro j
     rw [hPQ j, rtrace_add]
-    have hcst := hcost j
-    push_cast at hcst
-    linarith
+    linarith [hcost j]
   calc
     ∑ j, (2 * c j * rtrace (A j) - frobSq (A j)
       - max (c j) (c j ^ 2 / 2) * NI)
       ≤ ∑ j, (c j * rtrace (P j) + 2 * c j * rtrace (Q j)
-        - c j ^ 2 * b - frobSq (A j)) := sum_le_sum fun j _ => hterm j
-    _ ≤ (∑ j, c j ^ 2 / 4) * r := hbase
+        - c j ^ 2 * (b : ℝ) - frobSq (A j)) := sum_le_sum fun j _ => hterm j
+    _ ≤ (∑ j, c j ^ 2 / 4) * (r : ℝ) := hbase
 
 end ZetaResearch
