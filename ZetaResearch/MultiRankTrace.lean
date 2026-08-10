@@ -36,7 +36,7 @@ theorem sum_rank_trace_ineq
     intro j
     have h := rank_trace_ineq (hP j) (hQ j) (hr j) (hb j) (hc j)
     rw [← hPQ j] at h
-    exact_mod_cast h
+    linarith
   calc
     ∑ j, (c j * rtrace (P j) + 2 * c j * rtrace (Q j)
       - c j ^ 2 * (b : ℝ) - frobSq (A j))
