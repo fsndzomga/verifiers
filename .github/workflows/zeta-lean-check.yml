@@ -25,6 +25,7 @@ jobs:
             .lake/build
             lake-manifest.json
           key: zeta-lean-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}
+          save-always: true
       - name: Install elan
         run: |
           if [ ! -x "$HOME/.elan/bin/elan" ]; then
