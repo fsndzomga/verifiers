@@ -41,18 +41,19 @@ theorem sum_q_sq_of_moments
             apply Finset.sum_congr rfl
             intro i hi
             exact q_sq_expand (x i)
-    _ = (Finset.univ.card : ℝ)
+    _ = (((Finset.univ : Finset ι).card : ℝ)
           - (7 / 2 : ℝ) * (∑ i, x i)
           + (211 / 48 : ℝ) * (∑ i, x i ^ 2)
           - (7 / 3 : ℝ) * (∑ i, x i ^ 3)
-          + (4 / 9 : ℝ) * (∑ i, x i ^ 4) := by
+          + (4 / 9 : ℝ) * (∑ i, x i ^ 4)) := by
             simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib,
               Finset.sum_const, nsmul_eq_mul, mul_one, ← Finset.mul_sum]
-    _ = (Fintype.card ι : ℝ)
+    _ = ((Fintype.card ι : ℝ)
           - (7 / 2 : ℝ) * (∑ i, x i)
           + (211 / 48 : ℝ) * (∑ i, x i ^ 2)
           - (7 / 3 : ℝ) * (∑ i, x i ^ 3)
-          + (4 / 9 : ℝ) * (∑ i, x i ^ 4) := by simp
+          + (4 / 9 : ℝ) * (∑ i, x i ^ 4)) := by
+            rw [Finset.card_univ]
     _ = (5 / 36 : ℝ) * n := by
           rw [h0, h1, h2, h3, h4]
           ring
