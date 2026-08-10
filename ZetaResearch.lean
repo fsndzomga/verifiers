@@ -3,3 +3,4 @@ import ZetaResearch.TransferObstruction
 import ZetaResearch.MatrixSignRelax
 import ZetaResearch.SignedMatrixRelax
 import ZetaResearch.FrameMultiplier
+import ZetaResearch.OfflineSignedBridge
