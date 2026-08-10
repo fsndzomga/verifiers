@@ -127,20 +127,20 @@ theorem rank_hermNegPart_eq_negIndex {Q : Matrix n n ℂ} (hQ : Q.IsHermitian) :
   ext i
   simp only [mem_filter, mem_univ, true_and, ne_eq, negPart_eq_zero, not_le]
 
-/-- **Two-sided inertia penalty.** If at most `b₊` eigenvalues of `Q` are
-positive and at most `b₋` are negative, the two signs are charged separately.
+/-- **Two-sided inertia penalty.** If at most `bp` eigenvalues of `Q` are
+positive and at most `bm` are negative, the two signs are charged separately.
 This improves the crude rank penalty whenever the symbol is asymmetric. -/
 theorem signed_spectral_two_index_penalty
-    {Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {b₊ b₋ : ℕ}
-    (hpos : posIndex hQ ≤ b₊) (hneg : negIndex hQ ≤ b₋)
+    {Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {bp bm : ℕ}
+    (hpos : posIndex hQ ≤ bp) (hneg : negIndex hQ ≤ bm)
     {α β c : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hc : 0 ≤ c) :
     2 * c * (β * (∑ i, (hQ.eigenvalues i)⁺) + α * (∑ i, (hQ.eigenvalues i)⁻))
-      - c ^ 2 * (β ^ 2 * b₊ + α ^ 2 * b₋) ≤ frobSq Q := by
-  have hpCard : #{i | (hQ.eigenvalues i)⁺ ≠ 0} ≤ b₊ := by
+      - c ^ 2 * (β ^ 2 * bp + α ^ 2 * bm) ≤ frobSq Q := by
+  have hpCard : #{i | (hQ.eigenvalues i)⁺ ≠ 0} ≤ bp := by
     rw [← rank_specMap hQ (·⁺), show specMap hQ (·⁺) = hermPosPart hQ by rfl,
       rank_hermPosPart hQ]
     exact hpos
-  have hnCard : #{i | (hQ.eigenvalues i)⁻ ≠ 0} ≤ b₋ := by
+  have hnCard : #{i | (hQ.eigenvalues i)⁻ ≠ 0} ≤ bm := by
     rw [← rank_specMap hQ (·⁻), show specMap hQ (·⁻) = hermNegPart hQ by rfl,
       rank_hermNegPart_eq_negIndex hQ]
     exact hneg
@@ -163,13 +163,13 @@ theorem signed_spectral_two_index_penalty
 
 /-- Signed matrix tail bound with separate positive and negative indices. -/
 theorem bounded_hermitian_two_index_relaxation
-    {B Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {b₊ b₋ : ℕ}
-    (hpos : posIndex hQ ≤ b₊) (hneg : negIndex hQ ≤ b₋)
+    {B Q : Matrix n n ℂ} (hQ : Q.IsHermitian) {bp bm : ℕ}
+    (hpos : posIndex hQ ≤ bp) (hneg : negIndex hQ ≤ bm)
     {α β c : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hc : 0 ≤ c)
     (hUpper : (((β : ℂ) • (1 : Matrix n n ℂ)) - B).PosSemidef)
     (hLower : (B + ((α : ℂ) • (1 : Matrix n n ℂ))).PosSemidef) :
     2 * c * RCLike.re (B * Q).trace
-      - c ^ 2 * (β ^ 2 * b₊ + α ^ 2 * b₋) ≤ frobSq Q := by
+      - c ^ 2 * (β ^ 2 * bp + α ^ 2 * bm) ≤ frobSq Q := by
   have htrace := bounded_hermitian_trace_le_parts hQ hUpper hLower
   rw [rtrace_hermPosPart hQ, rtrace_hermNegPart hQ] at htrace
   have hmul : 2 * c * RCLike.re (B * Q).trace
