@@ -25,27 +25,25 @@ theorem bgsPairArg_eq_I_mul_gammaDiff (rho rho' : ℂ) :
 Anthropic complex-ordinate difference. -/
 theorem I_mul_bgsPairArg_eq_neg_gammaDiff (rho rho' : ℂ) :
     I * bgsPairArg rho rho' = -(Zeta23.gammaOf rho - star (Zeta23.gammaOf rho')) := by
-  rw [bgsPairArg_eq_I_mul_gammaDiff]
-  simp [mul_assoc]
+  apply Complex.ext <;> simp [bgsPairArg, Zeta23.gammaOf] <;> ring
 
 /-- Equivalently, the Anthropic difference is `-i` times the BGS variable. -/
 theorem gammaDiff_eq_neg_I_mul_bgsPairArg (rho rho' : ℂ) :
     Zeta23.gammaOf rho - star (Zeta23.gammaOf rho') = -I * bgsPairArg rho rho' := by
-  rw [bgsPairArg_eq_I_mul_gammaDiff]
-  simp [mul_assoc]
+  apply Complex.ext <;> simp [bgsPairArg, Zeta23.gammaOf] <;> ring
 
 /-- On the critical line the bridge reduces to the ordinary real ordinate
 difference. -/
 theorem gammaDiff_of_re_eq_half
     {rho rho' : ℂ} (hrho : rho.re = 1 / 2) (hrho' : rho'.re = 1 / 2) :
     Zeta23.gammaOf rho - star (Zeta23.gammaOf rho') = ((rho.im - rho'.im : ℝ) : ℂ) := by
-  apply Complex.ext <;> simp [Zeta23.gammaOf, hrho, hrho'] <;> ring
+  apply Complex.ext <;> simp [Zeta23.gammaOf, hrho, hrho']
 
 /-- Correspondingly the reflected BGS variable is purely imaginary on the
 critical line. -/
 theorem bgsPairArg_of_re_eq_half
     {rho rho' : ℂ} (hrho : rho.re = 1 / 2) (hrho' : rho'.re = 1 / 2) :
     bgsPairArg rho rho' = I * ((rho.im - rho'.im : ℝ) : ℂ) := by
-  rw [bgsPairArg_eq_I_mul_gammaDiff, gammaDiff_of_re_eq_half hrho hrho']
+  apply Complex.ext <;> simp [bgsPairArg, hrho, hrho'] <;> ring
 
 end ZetaResearch
