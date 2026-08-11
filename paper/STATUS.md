@@ -14,7 +14,7 @@ The scratch development kernel-checks the following finite-dimensional facts.
 5. A finite nonnegative form-factor quadrature `N = sum_t w_t u_t u_t^*`, `w_t >= 0`, is positive-semidefinite and plugs directly into this endpoint.
 6. The reflected complex variable of the unconditional Montgomery form factor and Anthropic's complex ordinate satisfy the exact identity
    `rho + conj(rho') - 1 = i * (gammaOf rho - conj(gammaOf rho'))`.
-7. `AnalyticTarget.lean` packages the exact remaining analytic data in `FormFactorBridgeCertificate`; `formFactorBridgeCertificate_implies_6792` proves the complete 67.92% endgame from that certificate.
+7. `AnalyticTarget.lean` states the exact remaining finite-dimensional analytic seam as `analytic_formFactor_bridge_implies_6792`: any nonnegative form-factor tail with the required decomposition, counting, trace, and `1.3208` Frobenius hypotheses forces the complete 67.92% endgame.
 
 Relevant Lean files are `TransferObstruction.lean`, `MatrixSignRelax.lean`, `SignedMatrixRelax.lean`, `FrameMultiplier.lean`, `OfflineSignedBridge.lean`, `TwoSidedInertia.lean`, `NegativeTail.lean`, `MultiRankTrace.lean`, `HyperbolicLine.lean`, `TailCounting.lean`, `FormFactorTail.lean`, `BGSBridge.lean`, and `AnalyticTarget.lean`.
 
