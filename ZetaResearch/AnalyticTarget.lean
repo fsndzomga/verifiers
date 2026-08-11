@@ -19,18 +19,18 @@ structure FormFactorBridgeCertificate
   weights : s → ℝ
   vectors : s → n → ℂ
   rankBudget pairBudget : ℕ
-  Non NI : ℝ
+  nOn nI : ℝ
   weights_nonneg : ∀ t, 0 ≤ weights t
   decomp : A = P + Q - (frameOperator weights vectors : Matrix n n ℂ)
   P_psd : P.PosSemidef
   Q_herm : Q.IsHermitian
   rank_P : P.rank ≤ rankBudget
   posIndex_Q : posIndex Q_herm ≤ pairBudget
-  trace_P : rtrace P ≤ Non
-  zero_count : Non + 2 * (pairBudget : ℝ) ≤ NI
-  NI_nonneg : 0 ≤ NI
-  trace_A : NI ≤ rtrace A
-  frob_A : frobSq A ≤ (1651 / 1250 : ℝ) * NI
+  trace_P : rtrace P ≤ nOn
+  zero_count : nOn + 2 * (pairBudget : ℝ) ≤ nI
+  nI_nonneg : 0 ≤ nI
+  trace_A : nI ≤ rtrace A
+  frob_A : frobSq A ≤ (1651 / 1250 : ℝ) * nI
 
 variable {n s : Type*} [Fintype n] [DecidableEq n] [Fintype s] [DecidableEq s]
 
@@ -42,10 +42,10 @@ off-line reflected pairs is carried by the positive-index field of the
 certificate. -/
 theorem formFactorBridgeCertificate_implies_6792
     (C : FormFactorBridgeCertificate n s) :
-    (849 / 1250 : ℝ) * C.NI ≤ (C.rankBudget : ℝ) := by
+    (849 / 1250 : ℝ) * C.nI ≤ (C.rankBudget : ℝ) := by
   exact finite_formFactor_tail_cgdL C.weights C.vectors C.weights_nonneg
     C.decomp C.P_psd C.Q_herm C.rank_P C.posIndex_Q C.trace_P C.zero_count
-    C.NI_nonneg C.trace_A C.frob_A
+    C.nI_nonneg C.trace_A C.frob_A
 
 /-- The arithmetic margin between 67.92% and Anthropic's 67.25007% benchmark
 is 0.66993 percentage points. This is useful when budgeting approximation and
