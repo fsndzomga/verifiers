@@ -26,21 +26,20 @@ Anthropic complex-ordinate difference. -/
 theorem I_mul_bgsPairArg_eq_neg_gammaDiff (rho rho' : ℂ) :
     I * bgsPairArg rho rho' = -(Zeta23.gammaOf rho - star (Zeta23.gammaOf rho')) := by
   rw [bgsPairArg_eq_I_mul_gammaDiff]
-  ring_nf
+  simp [mul_assoc]
 
 /-- Equivalently, the Anthropic difference is `-i` times the BGS variable. -/
 theorem gammaDiff_eq_neg_I_mul_bgsPairArg (rho rho' : ℂ) :
     Zeta23.gammaOf rho - star (Zeta23.gammaOf rho') = -I * bgsPairArg rho rho' := by
   rw [bgsPairArg_eq_I_mul_gammaDiff]
-  ring_nf
+  simp [mul_assoc]
 
 /-- On the critical line the bridge reduces to the ordinary real ordinate
 difference. -/
 theorem gammaDiff_of_re_eq_half
     {rho rho' : ℂ} (hrho : rho.re = 1 / 2) (hrho' : rho'.re = 1 / 2) :
     Zeta23.gammaOf rho - star (Zeta23.gammaOf rho') = ((rho.im - rho'.im : ℝ) : ℂ) := by
-  rw [Zeta23.gammaOf_of_re_eq_half hrho, Zeta23.gammaOf_of_re_eq_half hrho']
-  simp
+  apply Complex.ext <;> simp [Zeta23.gammaOf, hrho, hrho'] <;> ring
 
 /-- Correspondingly the reflected BGS variable is purely imaginary on the
 critical line. -/
