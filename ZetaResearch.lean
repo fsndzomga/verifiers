@@ -10,3 +10,4 @@ import ZetaResearch.MultiRankTrace
 import ZetaResearch.HyperbolicLine
 import ZetaResearch.TailCounting
 import ZetaResearch.FormFactorTail
+import ZetaResearch.BGSBridge
