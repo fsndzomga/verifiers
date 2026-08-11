@@ -12,3 +12,4 @@ import ZetaResearch.TailCounting
 import ZetaResearch.FormFactorTail
 import ZetaResearch.BGSBridge
 import ZetaResearch.AnalyticTarget
+import ZetaResearch.RecordTarget
